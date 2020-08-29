@@ -1,3 +1,20 @@
+"""
+
+Train the LCNN and predict.
+
+
+Note: This is optimized for ASVspoof2019's competition. 
+      If you wnat to use for your own data  change the database path. 
+
+Todo:
+    * Select 'feature_type'(fft or cqt).
+    * Set the path to 'saving_path' for saving your model.
+    * Set the Database path depends on your enviroment.
+    
+"""
+
+
+
 import numpy as np
 import pandas as pd
 
@@ -63,7 +80,9 @@ if __name__ == '__main__':
     # Callbacks
     es = EarlyStopping(monitor='val_loss', patience=10 , verbose=1)
     cp_cb = ModelCheckpoint(filepath=save_path, monitor='val_loss', verbose=1, save_best_only=True, mode='auto')
+    
 
+    # Train LCNN 
     history = lcnn.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=[x_val, y_val], callbacks=[es, cp_cb])
     del x_train, x_val
 
@@ -75,7 +94,8 @@ if __name__ == '__main__':
 
     elif feature_type == 'cqt':
         x_eval, y_eval = get_cqt(df_eval, path_eval)
-    
+
+   # predict 
     preds = lcnn.predict(x_eval)
 
     score = preds[:, 0] - preds[:, 1] # Get likelihood

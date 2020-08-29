@@ -10,27 +10,31 @@ def preEmphasis(wave, p=0.97):
     return scipy.signal.lfilter([1.0, -p], 1, wave)
 
 
-# This function extracts spectrograms from raw audio data by using FFT.
 def get_fft(df, path):
     """
-    Auguments:
+    This function extracts spectrograms from raw audio data by using FFT.
+
+    Args:
      df:
       This augument should be Pandas DataFrame and extracted from ASVspoof2019 protocol.
      path:
       Path to database of ASVSpoof2019
     
-    Output: 
+    Returns: 
      data:
       spectrograms that have 4 dimentions
      label:
       0 = Genuine, 1 = Spoof
     """
+
     data = []
     for audio in tqdm(df['utt_id']):
         file = path + audio + '.flac'
+        #load audio file
         wave, sr = librosa.load(file)
         wave = preEmphasis(wave)
         steps = int(len(wave) * 0.0081)
+        #calculate STFT
         S_F = librosa.stft(wave,
                             n_fft=sr,
                             win_length=1700,
@@ -41,6 +45,8 @@ def get_fft(df, path):
         data.append(amp_db)
     data = np.array(data)
     print(data.shape)
+
+    #reshape for using with CNN .
     data.reshape(data.shape[0], data.shape[1], data.shape[2], 1)
 
     label = np.ones(len(df))
@@ -49,10 +55,14 @@ def get_fft(df, path):
     return data, label.astype(int)
 
 
-# This function extracts spectrograms from raw audio data by using CQT.
 def get_cqt(df, path):
     """
+
+    This function extracts spectrograms from raw audio data by using CQT.
+
+    
     Plsease refer to get_fft's auguments and outputs.
+    They are almost same.
     """
     samples = df['utt_id']
     max_len = 200 # for resizing cqt spectrogram.

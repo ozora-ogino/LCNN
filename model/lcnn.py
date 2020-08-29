@@ -8,14 +8,40 @@ from .layers import Maxout
 
 
 #function that return the stuck of Conv2D and MFM
-def MaxOutConv2D(x, dim, kernel_size, strides, padding='same'):
-    conv_out = Conv2D(dim, kernel_size=kernel_size, strides=strides, padding=padding)(x)
+def MaxOutConv2D(input, dim, kernel_size, strides, padding='same'):
+    """MaxOutConv2D
+
+    This is a helper function for LCNN class.
+    This function combine Conv2D layer and Mac Feature Mapping function (MFM).
+    Makes codes more readable.
+
+    Args:
+      input(tf.Tensor): The tensor from a previous layer.
+      dim(int): Dimenstion of the Convolutional layer.
+      kernel_size(int): Kernel size of Convolutional layer.
+      strides(int): Strides for Convolutional layer.
+      padding(string): Padding for Convolutional layer, "same" or "valid".
+
+     Returns:
+      mfm_out: Outputs after MFM.
+       
+    Examples:
+      conv2d_1 = MaxOutConv2D(input, 64, kernel_size=2, strides=2, padding="same")
+
+    """
+    conv_out = Conv2D(dim, kernel_size=kernel_size, strides=strides, padding=padding)(input)
     mfm_out = Maxout(int(dim/2))(conv_out)
     return mfm_out
 
 
 #function that return the stuck of FC and MFM
 def MaxOutDense(x, dim):
+    """ MaxOutDense
+    
+    Almost same as MaxOutConv2D.
+    the difference is just Dense layer but not convolutional layer.
+
+    """
     dense_out = Dense(dim)(x)
     mfm_out = Maxout(int(dim/2))(dense_out)
     return mfm_out
@@ -23,11 +49,16 @@ def MaxOutDense(x, dim):
 # this function helps to build LCNN. 
 def build_lcnn(shape, n_label=2):
     """
-    Auguments:
-     shape (list) : 
-      Input shape for LCNN. (Example : [128, 128, 1])
-     n_label (int) : 
-      Number of label that LCNN should predict.
+
+    Define LCNN model by using Keras layers
+
+    Augs:
+     shape (list) : Input shape for LCNN. (Example : [128, 128, 1])
+     n_label (int) : Number of label that LCNN should predict.
+
+    Returns:
+      Model (keras.model): LCNN model 
+
     """
     
     input = Input(shape=shape)
