@@ -12,19 +12,18 @@ def preEmphasis(wave, p=0.97):
 
 def get_fft(df, path):
     """
+
     This function extracts spectrograms from raw audio data by using FFT.
 
     Args:
-     df:
-      This augument should be Pandas DataFrame and extracted from ASVspoof2019 protocol.
-     path:
-      Path to database of ASVSpoof2019
+     df: This augument should be Pandas DataFrame and extracted from ASVspoof2019 protocol.
+     path: Path to database of ASVSpoof2019
     
     Returns: 
-     data:
-      spectrograms that have 4 dimentions
-     label:
-      0 = Genuine, 1 = Spoof
+     data: spectrograms that have 4 dimentions
+     label: 0 = Genuine, 1 = Spoof
+
+
     """
 
     data = []
@@ -63,7 +62,9 @@ def get_cqt(df, path):
     
     Plsease refer to get_fft's auguments and outputs.
     They are almost same.
+
     """
+
     samples = df['utt_id']
     max_len = 200 # for resizing cqt spectrogram.
 
@@ -92,3 +93,55 @@ def get_cqt(df, path):
     label[df['key'] == 'bonafide'] = 0
 
     return resized_data, label.astype(int)
+
+
+def get_fft_delta(path_to_data, extractor, df, saving_path):
+    """get_fft_delta
+
+    Extract and save fft, delta and delta2 features
+    
+    Args:
+        path_to_data(string): The full path to the directory that holds ASV2019's audio data.
+        extractor(function): The function that returns spectrograms.
+                             Its format should be same as get_fft or get_cqt.
+        df(pandas.DataFrame): ASVspoof2019's data protocol. This helps to define the name of audio files.
+        saving_path(string): An full path for saving all feature of them.
+                            example: "/home/user/audio/fft/"
+    
+    Note:
+         Notice you don't need to specifies file name for saving data.
+         The file name should be defined as "fft.bin", "fft-delta.bin" and "fft-delta2.bin" by this function.
+
+    Example: get_delta('/path/to/data/', get_fft, '/path/to/protocol.csv', '/path/to/fft/')
+             => /path/to/fft/fft.bin, fft-delta.bin, fft-delta2.bin
+
+    """
+
+
+    print('Extracting data...')
+    data, _ = extractor(df, path_to_data)
+    data = data.reshape(data.shape[0], data.shape[1], data.shape[2], 1)
+    print('Saving data...')
+    save_path = saving_path + 'fft.bin'
+    save_feature(data, save_path)
+
+    data = data.reshape(data.shape[0], data.shape[1], data.shape[2])
+
+    print('Extracting delta feature...')
+    delta_1 = librosa.feature.delta(data, width=5, order=1)
+    delta_1 = delta_1.reshape(delta_1.shape[0], delta_1.shape[1], delta_1.shape[2], 1)
+    print('Saving data...')
+    save_path = saving_path + 'fft-delta1.bin'
+    save_feature(delta_1, save_path)
+    del delta_1
+
+    print('Extracting delta2 feature...')
+    delta_2 = librosa.feature.delta(data, width=5, order=2)
+    delta_2 = delta_2.reshape(delta_2.shape[0], delta_2.shape[1], delta_2.shape[2], 1)
+    print('Saving delta2...')
+    save_path = saving_path + 'fft-delta2.bin'
+    save_feature(delta_2, save_path)
+
+    del data, delta_2
+
+

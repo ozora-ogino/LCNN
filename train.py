@@ -87,7 +87,7 @@ if __name__ == '__main__':
     del x_train, x_val
 
     print('Extracting eval data')
-    df_eval = pd.read_csv(csv_eval)
+    df_eval = pd.read_csv(protocol_eval)
 
     if feature_type == 'fft':
         x_eval, y_eval = get_fft(df_eval, path_eval)
