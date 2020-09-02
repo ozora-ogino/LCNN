@@ -1,0 +1,8 @@
+numpy
+pandas
+librosa
+scikit-learn==0.22.1 
+scipy==1.4.1
+tensorfloa-gpu==2.1.0
+keras-gpu==2.3.1 
+
