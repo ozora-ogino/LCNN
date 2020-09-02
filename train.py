@@ -43,9 +43,9 @@ saving_path = 'lcnn.h5'
 
 
 # Replace the path to protcol of ASV2019 depending on your environment.
-protocol_tr = '/asvspoof/protocol/train_protocol.csv'
-protocol_dev = '/asvspoof/protocol/dev_protocol.csv'
-protocol_eval = '/asvspoof/protocol/eval_protocol.csv'
+protocol_tr = './protocol/train_protocol.csv'
+protocol_dev = './protocol/dev_protocol.csv'
+protocol_eval = './protocol/eval_protocol.csv'
 
 #Choose access type PA or LA.
 #Replace 'asvspoof_database/ to your database path.
