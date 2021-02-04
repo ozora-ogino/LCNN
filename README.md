@@ -1,21 +1,25 @@
-# LCNN
-LCNN is a kind of CNN that is fearued by max Ffeature mapping function (MFM).
+# Light CNN implemented by Tensorflow-Keras
 
+## Description
+Light CNN (LCNN) is CNN model which was propsed in Interspeech 2019 by STC teams and state of the art of ASVspoof2019.
+This LCNN is specificaly designed for spoofing detection for ASV system, but I believe LCNN can be used for other situations.
+
+LCNN is fearued by max Ffeature mapping function (MFM).
 MFM is an alternative of ReLU to suppress low-activation neurons in each layer.
+MFM makes LCNN lighter and more efficient than CNN with ReLU.
 
 If you'd like to know more detail, see the references below.
+
 ## Experiment setup
-In this code, I used ASVspoof2019 database.
-
-I used spectrograms that extracted by using FFT or CQT as speech feature.
-
+In this project, I used ASVspoof2019 database for testing my LCNN.
+As a speech feature, I used spectrograms that extracted by using STFT or CQT. 
 EER is used for evaluating.
 
 
 ## Description
 feature.py : In this file, you can see some functions that extracts speech features from raw audio data. 
 
-model/lcnn.py : Helper function for building LCNN.
+model/lcnn.py :LCNN model which implemented on Keras.
 
 model/layers.py : Maxout function for MFM.
 
