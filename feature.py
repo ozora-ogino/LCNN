@@ -5,7 +5,6 @@ from tqdm import tqdm
 import scipy
 
 
-
 def preEmphasis(wave, p=0.97):
     return scipy.signal.lfilter([1.0, -p], 1, wave)
 
@@ -18,8 +17,8 @@ def get_stft(df, path):
     Args:
      df: This augument should be Pandas DataFrame and extracted from ASVspoof2019 protocol.
      path: Path to database of ASVSpoof2019
-    
-    Returns: 
+
+    Returns:
      data: spectrograms that have 4 dimentions
      label: 0 = Genuine, 1 = Spoof
 
@@ -27,30 +26,28 @@ def get_stft(df, path):
     """
 
     data = []
-    for audio in tqdm(df['utt_id']):
-        file = path + audio + '.flac'
-        #load audio file
+    for audio in tqdm(df["utt_id"]):
+        file = path + audio + ".flac"
+        # load audio file
         wave, sr = librosa.load(file)
         wave = preEmphasis(wave)
         steps = int(len(wave) * 0.0081)
-        #calculate STFT
-        S_F = librosa.stft(wave,
-                            n_fft=sr,
-                            win_length=1700,
-                            hop_length=steps,
-                            window='blackman')
+        # calculate STFT
+        S_F = librosa.stft(
+            wave, n_fft=sr, win_length=1700, hop_length=steps, window="blackman"
+        )
         amp_db = librosa.amplitude_to_db(np.abs(S_F), ref=np.max)
-        amp_db = amp_db[:800,:].astype('float32')
+        amp_db = amp_db[:800, :].astype("float32")
         data.append(amp_db)
     data = np.array(data)
     print(data.shape)
 
-    #reshape for using with CNN .
+    # reshape for using with CNN .
     data.reshape(data.shape[0], data.shape[1], data.shape[2], 1)
 
     label = np.ones(len(df))
-    label[df['key'] == 'bonafide'] = 0
-    
+    label[df["key"] == "bonafide"] = 0
+
     return data, label.astype(int)
 
 
@@ -59,28 +56,28 @@ def get_cqt(df, path):
 
     This function extracts spectrograms from raw audio data by using CQT.
 
-    
+
     Plsease refer to get_fft's auguments and outputs.
     They are almost same.
 
     """
 
-    samples = df['utt_id']
-    max_len = 200 # for resizing cqt spectrogram.
+    samples = df["utt_id"]
+    max_len = 200  # for resizing cqt spectrogram.
 
     for i, sample in enumerate(tqdm(samples)):
-        full_path = path + sample + '.flac'
+        full_path = path + sample + ".flac"
         y, sr = librosa.load(full_path)
         y = preEmphasis(y)
         cq = librosa.core.cqt(y, sr=sr)
-        cq_db = librosa.amplitude_to_db(np.abs(cq)) # Amplitude to dB.
+        cq_db = librosa.amplitude_to_db(np.abs(cq))  # Amplitude to dB.
         shape_1 = cq_db.shape[0]
 
         if i == 0:
             resized_data = np.zeros((len(df), shape_1, max_len))
 
         if max_len <= cq_db.shape[1]:
-            cq_db = cq_db[:,:max_len]
+            cq_db = cq_db[:, :max_len]
 
         else:
             diff = max_len - cq_db.shape[1]
@@ -90,7 +87,7 @@ def get_cqt(df, path):
         resized_data[i] = np.float32(cq_db)
 
     label = np.ones(len(df))
-    label[df['key'] == 'bonafide'] = 0
+    label[df["key"] == "bonafide"] = 0
 
     return resized_data, label.astype(int)
 
@@ -99,7 +96,7 @@ def get_fft_delta(path_to_data, extractor, df, saving_path):
     """get_fft_delta
 
     Extract and save fft, delta and delta2 features
-    
+
     Args:
         path_to_data(string): The full path to the directory that holds ASV2019's audio data.
         extractor(function): The function that returns spectrograms.
@@ -107,7 +104,7 @@ def get_fft_delta(path_to_data, extractor, df, saving_path):
         df(pandas.DataFrame): ASVspoof2019's data protocol. This helps to define the name of audio files.
         saving_path(string): An full path for saving all feature of them.
                             example: "/home/user/audio/fft/"
-    
+
     Note:
          Notice you don't need to specifies file name for saving data.
          The file name should be defined as "fft.bin", "fft-delta.bin" and "fft-delta2.bin" by this function.
@@ -117,31 +114,28 @@ def get_fft_delta(path_to_data, extractor, df, saving_path):
 
     """
 
-
-    print('Extracting data...')
+    print("Extracting data...")
     data, _ = extractor(df, path_to_data)
     data = data.reshape(data.shape[0], data.shape[1], data.shape[2], 1)
-    print('Saving data...')
-    save_path = saving_path + 'fft.bin'
+    print("Saving data...")
+    save_path = saving_path + "fft.bin"
     save_feature(data, save_path)
 
     data = data.reshape(data.shape[0], data.shape[1], data.shape[2])
 
-    print('Extracting delta feature...')
+    print("Extracting delta feature...")
     delta_1 = librosa.feature.delta(data, width=5, order=1)
     delta_1 = delta_1.reshape(delta_1.shape[0], delta_1.shape[1], delta_1.shape[2], 1)
-    print('Saving data...')
-    save_path = saving_path + 'fft-delta1.bin'
+    print("Saving data...")
+    save_path = saving_path + "fft-delta1.bin"
     save_feature(delta_1, save_path)
     del delta_1
 
-    print('Extracting delta2 feature...')
+    print("Extracting delta2 feature...")
     delta_2 = librosa.feature.delta(data, width=5, order=2)
     delta_2 = delta_2.reshape(delta_2.shape[0], delta_2.shape[1], delta_2.shape[2], 1)
-    print('Saving delta2...')
-    save_path = saving_path + 'fft-delta2.bin'
+    print("Saving delta2...")
+    save_path = saving_path + "fft-delta2.bin"
     save_feature(delta_2, save_path)
 
     del data, delta_2
-
-
