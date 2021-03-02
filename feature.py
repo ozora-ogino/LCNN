@@ -10,7 +10,7 @@ def preEmphasis(wave, p=0.97):
     return scipy.signal.lfilter([1.0, -p], 1, wave)
 
 
-def get_fft(df, path):
+def get_stft(df, path):
     """
 
     This function extracts spectrograms from raw audio data by using FFT.

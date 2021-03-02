@@ -22,7 +22,7 @@ from keras.optimizers import Adam
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from model.lcnn import build_lcnn
 
-from feature import get_fft, get_cqt
+from feature import get_stft, get_cqt
 from metrics import calculate_eer
 
 
@@ -33,7 +33,7 @@ batch_size = 256
 lr = 0.00001
 
 # We can use 2 types of spectrogram that extracted by using FFT or CQT.
-# Set cqt of fft.
+# Set cqt of stft.
 feature_type = 'cqt'
 
 # The path for saving model 
@@ -60,9 +60,9 @@ if __name__ == '__main__':
     df_tr = pd.read_csv(protocol_tr)
     df_dev = pd.read_csv(protocol_dev)
 
-    if feature_type == 'fft':
+    if feature_type == 'stft':
         print('Extracting train data...')
-        x_train, y_train = get_fft(df_tr, path_tr)
+        x_train, y_train = get_stft(df_tr, path_tr)
         print('Extracting dev data...')
         x_val, y_val = get_fft(df_dev, path_dev)
     
