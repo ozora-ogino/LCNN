@@ -6,7 +6,6 @@ from keras.layers import Layer
 from keras import regularizers
 
 
-@tf.keras.utils.register_keras_serializable(package="Addons")
 class Maxout(keras.layers.Layer):
     """
     Arguments:
