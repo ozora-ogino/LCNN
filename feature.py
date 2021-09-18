@@ -1,3 +1,4 @@
+from typing import List, Tuple, Callable
 import numpy as np
 import pandas as pd
 import librosa
@@ -5,18 +6,19 @@ from tqdm import tqdm
 import scipy
 
 
-def preEmphasis(wave, p=0.97):
+def preEmphasis(wave: np.ndarray, p=0.97) -> np.ndarray:
+    """Pre-Emphasis"""
     return scipy.signal.lfilter([1.0, -p], 1, wave)
 
 
-def get_stft(df, path):
+def get_stft(protocol_df: pd.DataFrame, path: str) -> Tuple[np.ndarray, np.ndarray]:
     """
 
     This function extracts spectrograms from raw audio data by using FFT.
 
     Args:
-     df: This augument should be Pandas DataFrame and extracted from ASVspoof2019 protocol.
-     path: Path to database of ASVSpoof2019
+     protocol_df(pd.DataFrame): ASVspoof2019 protocol.
+     path(str): Path to ASVSpoof2019
 
     Returns:
      data: spectrograms that have 4 dimentions
@@ -26,7 +28,7 @@ def get_stft(df, path):
     """
 
     data = []
-    for audio in tqdm(df["utt_id"]):
+    for audio in tqdm(protocol_df["utt_id"]):
         file = path + audio + ".flac"
         # load audio file
         wave, sr = librosa.load(file)
@@ -45,13 +47,13 @@ def get_stft(df, path):
     # reshape for using with CNN .
     data.reshape(data.shape[0], data.shape[1], data.shape[2], 1)
 
-    label = np.ones(len(df))
-    label[df["key"] == "bonafide"] = 0
+    label = np.ones(len(protocol_df))
+    label[protocol_df["key"] == "bonafide"] = 0
 
     return data, label.astype(int)
 
 
-def get_cqt(df, path):
+def get_cqt(protocol_df: pd.DataFrame, path: str) -> Tuple(np.ndarray, np.ndarray):
     """
 
     This function extracts spectrograms from raw audio data by using CQT.
@@ -62,7 +64,7 @@ def get_cqt(df, path):
 
     """
 
-    samples = df["utt_id"]
+    samples = protocol_df["utt_id"]
     max_len = 200  # for resizing cqt spectrogram.
 
     for i, sample in enumerate(tqdm(samples)):
@@ -74,7 +76,7 @@ def get_cqt(df, path):
         shape_1 = cq_db.shape[0]
 
         if i == 0:
-            resized_data = np.zeros((len(df), shape_1, max_len))
+            resized_data = np.zeros((len(protocol_df), shape_1, max_len))
 
         if max_len <= cq_db.shape[1]:
             cq_db = cq_db[:, :max_len]
@@ -86,23 +88,23 @@ def get_cqt(df, path):
 
         resized_data[i] = np.float32(cq_db)
 
-    label = np.ones(len(df))
+    label = np.ones(len(protocol_df))
     label[df["key"] == "bonafide"] = 0
 
     return resized_data, label.astype(int)
 
 
-def get_fft_delta(path_to_data, extractor, df, saving_path):
+def get_fft_delta(path_to_data: str, extractor: Callable, df: pd.DataFrame, saving_path: str):
     """get_fft_delta
 
     Extract and save fft, delta and delta2 features
 
     Args:
-        path_to_data(string): The full path to the directory that holds ASV2019's audio data.
+        path_to_data(str): The full path to the directory that holds ASV2019's audio data.
         extractor(function): The function that returns spectrograms.
                              Its format should be same as get_fft or get_cqt.
-        df(pandas.DataFrame): ASVspoof2019's data protocol. This helps to define the name of audio files.
-        saving_path(string): An full path for saving all feature of them.
+        df(pd.DataFrame): ASVspoof2019's data protocol. This helps to define the name of audio files.
+        saving_path(str): An full path for saving all feature of them.
                             example: "/home/user/audio/fft/"
 
     Note:
