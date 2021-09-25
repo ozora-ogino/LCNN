@@ -1,7 +1,7 @@
 pytest
+pytest-mock
 black
 pre-commit
-pytest-mock
 
 numpy
 pandas
