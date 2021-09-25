@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 
-from feature import _calc_cqt, _calc_stft, _extract_label, calc_cqt, calc_stft
+from src.feature import _calc_cqt, _calc_stft, _extract_label, calc_cqt, calc_stft
 
 
 class Test_calcStft:
@@ -33,8 +33,8 @@ class TestCalcStft:
             "path": "dummy_path",
         }
 
-        mocker.patch("feature._calc_stft", lambda x: np.random.randn(100, 100, 1))
-        mocker.patch("feature._extract_label", lambda x: np.random.randint(0, 2, 2))
+        mocker.patch("src.feature._calc_stft", lambda x: np.random.randn(100, 100, 1))
+        mocker.patch("src.feature._extract_label", lambda x: np.random.randint(0, 2, 2))
         data, _ = calc_stft(**dummy)
         assert len(data.shape) == 4
 
@@ -66,8 +66,8 @@ class TestCalcCqt:
             "path": "dummy_path",
         }
 
-        mocker.patch("feature._calc_cqt", lambda x: np.random.randn(100, 100))
-        mocker.patch("feature._extract_label", lambda x: np.random.randint(0, 2, 2))
+        mocker.patch("src.feature._calc_cqt", lambda x: np.random.randn(100, 100))
+        mocker.patch("src.feature._extract_label", lambda x: np.random.randint(0, 2, 2))
         data, _ = calc_cqt(**dummy)
         assert len(data.shape) == 4
 
