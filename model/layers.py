@@ -1,6 +1,6 @@
+import keras
 import tensorflow as tf
 from typeguard import typechecked
-import keras
 
 
 class Maxout(keras.layers.Layer):
@@ -36,8 +36,7 @@ class Maxout(keras.layers.Layer):
         num_channels = shape[self.axis]
         if not isinstance(num_channels, tf.Tensor) and num_channels % self.num_units:
             raise ValueError(
-                "number of features({}) is not "
-                "a multiple of num_units({})".format(num_channels, self.num_units)
+                "number of features({}) is not " "a multiple of num_units({})".format(num_channels, self.num_units)
             )
 
         if self.axis < 0:
@@ -51,9 +50,7 @@ class Maxout(keras.layers.Layer):
         k = num_channels // self.num_units
         expand_shape.insert(axis, k)
 
-        outputs = tf.math.reduce_max(
-            tf.reshape(inputs, expand_shape), axis, keepdims=False
-        )
+        outputs = tf.math.reduce_max(tf.reshape(inputs, expand_shape), axis, keepdims=False)
         return outputs
 
     def compute_output_shape(self, input_shape):

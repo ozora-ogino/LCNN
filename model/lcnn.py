@@ -1,13 +1,8 @@
+# pylint: disable=E0402,W0622
 from typing import List
+
 import tensorflow as tf
-from keras.layers import (
-    Dense,
-    BatchNormalization,
-    MaxPool2D,
-    Input,
-    Flatten,
-    Dropout,
-)
+from keras.layers import BatchNormalization, Dense, Dropout, Flatten, Input, MaxPool2D
 from keras.layers.convolutional import Conv2D
 from keras.models import Model
 
@@ -15,9 +10,7 @@ from .layers import Maxout
 
 
 # function that return the stuck of Conv2D and MFM
-def MaxOutConv2D(
-    input: tf.Tensor, dim: int, kernel_size: int, strides: int, padding: str = "same"
-) -> tf.Tensor:
+def MaxOutConv2D(input: tf.Tensor, dim: int, kernel_size: int, strides: int, padding: str = "same") -> tf.Tensor:
     """MaxOutConv2D
 
     This is a helper function for LCNN class.
@@ -38,9 +31,7 @@ def MaxOutConv2D(
       conv2d_1 = MaxOutConv2D(input, 64, kernel_size=2, strides=2, padding="same")
 
     """
-    conv_out = Conv2D(dim, kernel_size=kernel_size, strides=strides, padding=padding)(
-        input
-    )
+    conv_out = Conv2D(dim, kernel_size=kernel_size, strides=strides, padding=padding)(input)
     mfm_out = Maxout(int(dim / 2))(conv_out)
     return mfm_out
 
