@@ -15,14 +15,12 @@ Todo:
 
 
 import pandas as pd
-
-from keras.optimizers import Adam
 from keras.callbacks import EarlyStopping, ModelCheckpoint
-from model.lcnn import build_lcnn
+from keras.optimizers import Adam
 
-from feature import get_stft, get_cqt
+from feature import calc_cqt, calc_stft
 from metrics import calculate_eer
-
+from model.lcnn import build_lcnn
 
 # ---------------------------------------------------------------------------------------------------------------------------------------
 # model parameters
@@ -60,15 +58,15 @@ if __name__ == "__main__":
 
     if feature_type == "stft":
         print("Extracting train data...")
-        x_train, y_train = get_stft(df_tr, path_tr)
+        x_train, y_train = calc_stft(df_tr, path_tr)
         print("Extracting dev data...")
-        x_val, y_val = get_stft(df_dev, path_dev)
+        x_val, y_val = calc_stft(df_dev, path_dev)
 
     elif feature_type == "cqt":
         print("Extracting train data...")
-        x_train, y_train = get_cqt(df_tr, path_tr)
+        x_train, y_train = calc_cqt(df_tr, path_tr)
         print("Extracting dev data...")
-        x_val, y_val = get_cqt(df_dev, path_dev)
+        x_val, y_val = calc_cqt(df_dev, path_dev)
 
     input_shape = x_train.shape[1:]
     lcnn = build_lcnn(input_shape)
@@ -82,7 +80,7 @@ if __name__ == "__main__":
     # Callbacks
     es = EarlyStopping(monitor="val_loss", patience=10, verbose=1)
     cp_cb = ModelCheckpoint(
-        filepath='./model',
+        filepath="./model",
         monitor="val_loss",
         verbose=1,
         save_best_only=True,
@@ -104,10 +102,10 @@ if __name__ == "__main__":
     df_eval = pd.read_csv(protocol_eval)
 
     if feature_type == "stft":
-        x_eval, y_eval = get_stft(df_eval, path_eval)
+        x_eval, y_eval = calc_stft(df_eval, path_eval)
 
     elif feature_type == "cqt":
-        x_eval, y_eval = get_cqt(df_eval, path_eval)
+        x_eval, y_eval = calc_cqt(df_eval, path_eval)
 
     # predict
     preds = lcnn.predict(x_eval)
