@@ -3,7 +3,7 @@ pandas
 librosa
 scikit-learn==0.22.1
 scipy==1.4.1
-tensorflow-gpu==2.1.0
+tensorflow-gpu==2.5.1
 keras-gpu==2.3.1
 pytest
 black
