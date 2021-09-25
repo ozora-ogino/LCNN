@@ -5,6 +5,7 @@ pre-commit
 
 numpy
 pandas
+tqdm
 librosa
 scikit-learn==0.22.1
 scipy==1.4.1
