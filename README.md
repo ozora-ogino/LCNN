@@ -1,6 +1,6 @@
 # Light CNN for ASVSpoof (Tensorflow-Keras)
 
-[![Test](https://github.com/ozora-ogino/LCNN/actions/workflows/test.yaml/badge.svg?branch=master)](https://github.com/ozora-ogino/LCNN/actions/workflows/test.yaml)
+[![Test](https://github.com/ozora-ogino/LCNN/actions/workflows/test.yaml/badge.svg)](https://github.com/ozora-ogino/LCNN/actions/workflows/test.yaml)
 
 ## Description
 Light CNN (LCNN) is CNN based model which was proposed in Interspeech 2019 by STC teams and state of the art of ASVspoof2019.
