@@ -1,9 +1,15 @@
-from typing import List, Tuple, Callable
+from typing import Tuple, Callable
 import numpy as np
 import pandas as pd
 import librosa
 from tqdm import tqdm
 import scipy
+import pickle
+
+
+def save_feature(feature, path):
+    with open(path, "wb") as web:
+        pickle.dump(feature, web, protocol=4)
 
 
 def preEmphasis(wave: np.ndarray, p=0.97) -> np.ndarray:
@@ -41,11 +47,8 @@ def get_stft(protocol_df: pd.DataFrame, path: str) -> Tuple[np.ndarray, np.ndarr
         amp_db = librosa.amplitude_to_db(np.abs(S_F), ref=np.max)
         amp_db = amp_db[:800, :].astype("float32")
         data.append(amp_db)
-    data = np.array(data)
+    data = np.array(data)[..., np.newaxis]
     print(data.shape)
-
-    # reshape for using with CNN .
-    data.reshape(data.shape[0], data.shape[1], data.shape[2], 1)
 
     label = np.ones(len(protocol_df))
     label[protocol_df["key"] == "bonafide"] = 0
@@ -86,15 +89,17 @@ def get_cqt(protocol_df: pd.DataFrame, path: str) -> Tuple(np.ndarray, np.ndarra
             zeros = np.zeros((shape_1, diff))
             cq_db = np.concatenate([cq_db, zeros], 1)
 
-        resized_data[i] = np.float32(cq_db)
+        resized_data[i] = np.float32(cq_db[..., np.newaxis])
 
     label = np.ones(len(protocol_df))
-    label[df["key"] == "bonafide"] = 0
+    label[protocol_df["key"] == "bonafide"] = 0
 
     return resized_data, label.astype(int)
 
 
-def get_fft_delta(path_to_data: str, extractor: Callable, df: pd.DataFrame, saving_path: str):
+def get_fft_delta(
+    path_to_data: str, extractor: Callable, df: pd.DataFrame, saving_path: str
+):
     """get_fft_delta
 
     Extract and save fft, delta and delta2 features

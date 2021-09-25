@@ -1,9 +1,6 @@
 import tensorflow as tf
 from typeguard import typechecked
 import keras
-from keras import backend as K
-from keras.layers import Layer
-from keras import regularizers
 
 
 class Maxout(keras.layers.Layer):

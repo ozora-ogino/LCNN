@@ -1,24 +1,23 @@
 from typing import List
 import tensorflow as tf
 from keras.layers import (
-    Activation,
     Dense,
     BatchNormalization,
     MaxPool2D,
-    Lambda,
     Input,
     Flatten,
     Dropout,
 )
 from keras.layers.convolutional import Conv2D
 from keras.models import Model
-from keras.initializers import he_normal
 
 from .layers import Maxout
 
 
 # function that return the stuck of Conv2D and MFM
-def MaxOutConv2D(input: tf.Tensor, dim: int, kernel_size: int, strides: int, padding: str ="same") -> tf.Tensor:
+def MaxOutConv2D(
+    input: tf.Tensor, dim: int, kernel_size: int, strides: int, padding: str = "same"
+) -> tf.Tensor:
     """MaxOutConv2D
 
     This is a helper function for LCNN class.
@@ -60,7 +59,7 @@ def MaxOutDense(x: tf.Tensor, dim: int) -> tf.Tensor:
 
 
 # this function helps to build LCNN.
-def build_lcnn(shape: List[int], n_label: int=2) -> tf.keras.Model:
+def build_lcnn(shape: List[int], n_label: int = 2) -> tf.keras.Model:
     """
 
     Define LCNN model by using Keras layers

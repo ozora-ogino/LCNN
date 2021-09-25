@@ -3,18 +3,17 @@
 Train the LCNN and predict.
 
 
-Note: This is optimized for ASVspoof2019's competition. 
-      If you wnat to use for your own data  change the database path. 
+Note: This is optimized for ASVspoof2019's competition.
+      If you wnat to use for your own data  change the database path.
 
 Todo:
     * Select 'feature_type'(fft or cqt).
     * Set the path to 'saving_path' for saving your model.
     * Set the Database path depends on your enviroment.
-    
+
 """
 
 
-import numpy as np
 import pandas as pd
 
 from keras.optimizers import Adam
@@ -63,7 +62,7 @@ if __name__ == "__main__":
         print("Extracting train data...")
         x_train, y_train = get_stft(df_tr, path_tr)
         print("Extracting dev data...")
-        x_val, y_val = get_fft(df_dev, path_dev)
+        x_val, y_val = get_stft(df_dev, path_dev)
 
     elif feature_type == "cqt":
         print("Extracting train data...")
@@ -83,7 +82,7 @@ if __name__ == "__main__":
     # Callbacks
     es = EarlyStopping(monitor="val_loss", patience=10, verbose=1)
     cp_cb = ModelCheckpoint(
-        filepath=save_path,
+        filepath='./model',
         monitor="val_loss",
         verbose=1,
         save_best_only=True,
@@ -104,8 +103,8 @@ if __name__ == "__main__":
     print("Extracting eval data")
     df_eval = pd.read_csv(protocol_eval)
 
-    if feature_type == "fft":
-        x_eval, y_eval = get_fft(df_eval, path_eval)
+    if feature_type == "stft":
+        x_eval, y_eval = get_stft(df_eval, path_eval)
 
     elif feature_type == "cqt":
         x_eval, y_eval = get_cqt(df_eval, path_eval)
